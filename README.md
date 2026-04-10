@@ -22,5 +22,3 @@ Esta aplicação em linha de comando permite registrar, visualizar e analisar ga
 - Pytest (testes automatizados)
 - Ruff (linting)
 - GitHub Actions (CI)
-
-## 📁 Estrutura do projeto
