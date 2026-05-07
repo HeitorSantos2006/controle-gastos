@@ -19,10 +19,11 @@ def salvar_gastos(gastos):
 
 
 def adicionar_gasto(valor, categoria):
-    if valor <= 0:
-        raise ValueError("Valor deve ser positivo")
+    if valor < 0:
+        raise ValueError("Valor inválido")
 
     gastos = carregar_gastos()
+
     gastos.append({
         "valor": valor,
         "categoria": categoria
@@ -31,93 +32,58 @@ def adicionar_gasto(valor, categoria):
     salvar_gastos(gastos)
 
 
-def listar_gastos():
-    return carregar_gastos()
-
-
 def total_gastos():
-    return sum(g["valor"] for g in carregar_gastos())
+    gastos = carregar_gastos()
 
-
-def filtrar_por_categoria(categoria):
-    return [
-        g for g in carregar_gastos()
-        if g["categoria"].lower() == categoria.lower()
-    ]
+    return sum(g["valor"] for g in gastos)
 
 
 def cotacao_dolar():
-    url = "https://economia.awesomeapi.com.br/json/last/USD-BRL"
-
-    response = requests.get(url, timeout=10)
+    response = requests.get(
+        "https://economia.awesomeapi.com.br/json/last/USD-BRL",
+        timeout=10
+    )
 
     data = response.json()
 
     return data["USDBRL"]["bid"]
 
 
-def menu():
+if __name__ == "__main__":
+
     while True:
-        print("\n==== CONTROLE DE GASTOS ====")
+
+        print("\n--- CONTROLE DE GASTOS ---")
         print("1 - Adicionar gasto")
-        print("2 - Listar gastos")
-        print("3 - Total")
-        print("4 - Filtrar por categoria")
-        print("5 - Cotação do dólar")
-        print("0 - Sair")
+        print("2 - Ver total")
+        print("3 - Ver cotação do dólar")
+        print("4 - Sair")
 
         op = input("Escolha: ")
 
         if op == "1":
-            try:
-                valor = float(input("Valor: "))
-                categoria = input("Categoria: ")
 
-                adicionar_gasto(valor, categoria)
+            valor = float(input("Valor: "))
+            categoria = input("Categoria: ")
 
-                print("Gasto adicionado!")
+            adicionar_gasto(valor, categoria)
 
-            except ValueError as e:
-                print("Erro:", e)
+            print("Gasto adicionado!")
 
         elif op == "2":
-            gastos = listar_gastos()
 
-            if not gastos:
-                print("Nenhum gasto registrado.")
-
-            for g in gastos:
-                print(g)
+            print(f"Total: R$ {total_gastos()}")
 
         elif op == "3":
-            print("Total:", total_gastos())
+
+            valor = cotacao_dolar()
+
+            print(f"Dólar atual: R$ {valor}")
 
         elif op == "4":
-            cat = input("Categoria: ")
 
-            filtrados = filtrar_por_categoria(cat)
-
-            if not filtrados:
-                print("Nenhum gasto encontrado.")
-
-            for g in filtrados:
-                print(g)
-
-        elif op == "5":
-            try:
-                dolar = cotacao_dolar()
-                print(f"Cotação do dólar: R$ {dolar}")
-
-            except Exception as e:
-                print("Erro ao buscar cotação:", e)
-
-        elif op == "0":
-            print("Saindo...")
             break
 
         else:
+
             print("Opção inválida!")
-
-
-if __name__ == "__main__":
-    menu()
