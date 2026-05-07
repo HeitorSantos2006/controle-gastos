@@ -38,8 +38,20 @@ def test_total():
 
     assert total_gastos() == 30
 
+def test_cotacao_dolar(monkeypatch):
 
-def test_cotacao_dolar():
+    class MockResponse:
+        def json(self):
+            return {
+                "USDBRL": {
+                    "bid": "5.00"
+                }
+            }
+
+    def mock_get(*args, **kwargs):
+        return MockResponse()
+
+    monkeypatch.setattr("requests.get", mock_get)
 
     valor = cotacao_dolar()
 
